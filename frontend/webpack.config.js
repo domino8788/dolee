@@ -1,35 +1,45 @@
+require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const port = process.env.PORT || 80;
 module.exports = {
-  entry: './src/index.js',
   mode: 'development',
+  entry: './src/index.js',
   module: {
     rules: [
       {
-        test: /\\.(js|jsx)$/,
-        exclude: /(node_modules|bower_components)/,
+        test: /\.(js|jsx)?$/,
         loader: 'babel-loader',
-        options: {presets: ['@babel/env']},
+        exclude: /node_modules/,
       },
       {
-        test: /\\.css$/,
+        test: /\.(css)$/,
         use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(jpeg|jpg|JPG|svg)$/,
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+        },
       },
     ],
   },
-  resolve: {extensions: ['*', '.js', '.jsx']},
+  resolve: {
+    extensions: ['*', '.js', '.jsx'],
+    alias: {},
+  },
   output: {
     path: path.resolve(__dirname, 'dist/'),
-    publicPath: '/dist/',
     filename: 'bundle.js',
   },
   devServer: {
     contentBase: path.join(__dirname, 'public/'),
-    port: 3000,
-    publicPath: 'http://localhost:3000/dist/',
-    hotOnly: true,
+    port: port,
+    publicPath: '/',
+    hot: true,
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
@@ -38,4 +48,5 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
   ],
+  devtool: 'inline-source-map',
 };
